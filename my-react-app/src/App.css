@@ -1,0 +1,210 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap");
+
+:root {
+  --bg: #000;
+  --text: #fff;
+  --muted: #9a9aa3;
+  --orange: #ffb74c;
+  --red: #ff4c4c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  font-family: "Montserrat", system-ui, sans-serif;
+  color: var(--text);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+button:focus-visible,
+.url-input:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 4px;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 48px;
+}
+
+/* top nav */
+.topbar {
+  display: flex;
+  gap: 36px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.nav-item svg {
+  fill: #ffffff;
+  stroke: none;
+}
+
+/* main column */
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 64px;
+  width: 100%;
+}
+
+.go {
+  /* the height and width of the GO button */
+  width: 270px;
+  height: 270px;
+  /* makes the button circular */
+  border-radius: 50%;
+  /* makes the button have a gradient border with a solid background */
+  border: 3px solid transparent;
+  /* the color of the circle */  
+  background:
+    linear-gradient(var(--bg), var(--bg)) padding-box,
+    linear-gradient(180deg, var(--orange), var(--red)) border-box;
+  /* the font of the GO text */
+  font-size: 68px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.go:hover {
+  box-shadow: 0 0 40px rgba(47, 224, 208, 0.25);
+}
+
+.go:active {
+  transform: scale(0.98);
+}
+
+/* URL box (sits where the red block was) */
+.url-area {
+  width: min(540px, 100%);
+  margin-top: 90px;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.url-input {
+  width: 100%;
+  padding: 16px 22px;
+  font: inherit;
+  font-size: 18px;
+  color: var(--text);
+  text-align: center;
+  background: transparent;
+  border: 1.5px solid #2a2a30;
+  border-radius: 999px;
+  transition: border-color 0.2s ease;
+}
+
+.url-input::placeholder {
+  color: #6c6c75;
+}
+
+.url-input:focus {
+  border-color: var(--red);
+  outline: none;
+}
+
+.status {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* connections toggle */
+.connections {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.connections-label {
+  font-size: 18px;
+  color: var(--muted);
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.mode {
+  font-size: 24px;
+  color: var(--muted);
+}
+
+.mode.active {
+  color: var(--red);
+}
+
+.mode-switch {
+  width: 56px;
+  height: 56px;
+  border: 1px solid #2f2f35;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.mode-switch svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: #d0d0d6;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 480px) {
+  .go {
+    width: 220px;
+    height: 220px;
+    font-size: 56px;
+  }
+  .url-area {
+    margin-top: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
