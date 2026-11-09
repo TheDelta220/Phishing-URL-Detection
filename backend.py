@@ -41,7 +41,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 # Nothing secret lives in source code. Copy .env.example to .env and edit it.
 # ==============================================================================================
 BASE_DIR = Path(__file__).resolve().parent
-load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR / "my-react-app" / "src" / ".env")
 
 
 def _int(name: str, default: int) -> int:
@@ -866,6 +866,11 @@ def _decide(model: PhishingModel, url: str, secure: bool) -> tuple[NormalisedURL
     probs = model.predict(nu.normalised)
     return nu, probs, secure
 
+# TEMP FUNC FOR DOS VIDEO DEMONSTRATION, COMMENT OUT LATER
+def _slow_decide_test_load(model, url, secure):
+    time.sleep(3)
+    return _decide(model, url, secure)
+# ---------------------------------------------------------------
 
 def _build_result(url: str, nu: NormalisedURL, probs: dict, secure: bool) -> dict:
     p_phish = round(1.0 - probs["benign"], 6)
@@ -904,7 +909,17 @@ async def health(request: Request):
 async def predict(request: Request, sid: SessionID, body: PredictRequest):
     model: PhishingModel = request.app.state.model
     started = time.perf_counter()
-    nu, probs, secure = await request.app.state.gate.run(_decide, model, body.url, True)
+
+    # TEMP FUNC FOR DOS VIDEO DEMONSTRATION COMMENT OUT LATER
+    decision_function = _decide
+    if request.headers.get("X-Test-Slow") == "true":
+        decision_function = _slow_decide_test_load
+    nu, probs, secure = await request.app.state.gate.run(decision_function, model, body.url, True)
+    # ---------------------------------------------------------------------------------------------------
+
+    # turn below back into regular code after removing temp DOS code
+    # nu, probs, secure = await request.app.state.gate.run(_decide, model, body.url, True)
+
     result = _build_result(body.url, nu, probs, secure)
     row = await run_in_threadpool(
         request.app.state.history.add, session_id=sid,

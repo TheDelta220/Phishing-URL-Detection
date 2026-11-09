@@ -9,3 +9,6 @@ pip install pandas numpy scikit-learn scipy matplotlib tqdm jupyter
 ## How to run
 1. Open `Phishing_URL_Detection.ipynb` in Jupyter or VS Code.
 2. Choose **Restart kernel, then Run All**.
+
+# 2.8 Advanced Security: Attack through API
+## Detection Evasion

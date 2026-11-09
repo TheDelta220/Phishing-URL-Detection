@@ -1,0 +1,102 @@
+IMPORTANT STUFF BEFORE TESTING
+To run the program:
+python -m uvicorn backend:app --reload --port 8000
+then, open the link on your browser. probably something like this --> http://127.0.0.1:8000/docs
+
+To reload:
+uvicorn backend:app --reload
+
+To get your UUID (session ID):
+[guid]::NewGuid()
+
+
+2.7 testing
+
+SQL: 
+
+Make sure the .env file has SECURITY_MODE set to secure, and then run backend with " uvicorn backend:app --reload "
+REPLACE YOUR_UUID WITH YOUR ACTUAL SESSION ID. TO GET YOUR SESSION ID READ ABOVE. BACKEND MUST BE RUNNING.
+
+Open a second terminal, run " Get-Content .\request.json ". It should return {"url":"https://example.com/%27%20OR%20%271%27%3D%271%27--"}.
+If it doesn't return that, run:
+$body = @{
+    url = "https://example.com/%27%20OR%20%271%27%3D%271%27--"
+} | ConvertTo-Json -Compress
+
+[System.IO.File]::WriteAllText(
+    "$PWD\request.json",
+    $body,
+    (New-Object System.Text.UTF8Encoding($false))
+)
+
+Now, run this command:
+curl.exe -X POST "http://127.0.0.1:8000/api/predict" `
+    -H "Content-Type: application/json" `
+    -H "X-Session-ID: YOUR_UUID" `
+    --data-binary "@request.json"
+to store the input into the backend. This submitted URL should normalise into "https://example.com/' or '1'='1'--" which is a common SQL attack.
+This should be accepted as an input. (Note: legitimate verdict is just model classification)
+
+Next run these commands (this requires the same session ID):
+curl.exe -G "http://127.0.0.1:8000/api/history" `
+    -H "X-Session-ID: YOUR_UUID" `
+    --data-urlencode "limit=10"
+
+curl.exe -G "http://127.0.0.1:8000/api/history" `
+    -H "X-Session-ID: YOUR_UUID" `
+    --data-urlencode "search=%' OR '1'='1' --"
+THIS SHOULD NOT RETURN EVERY RECORD IN THE HISTORY!!! IT WILL RETURN A GET HISTORY RESPONSE, MAKE SURE STORED URL IS PRESENT!!
+for example: mine outputs:
+{
+  "id": 8,
+  "url": "https://example.com/%27%20OR%20%271%27%3D%271%27--",
+  "normalised_url": "https://example.com/' or '1'='1'--"
+}
+This means it appeared as record 8 and the database DID NOT interpret the 'OR' and '--' as SQL instructions. This means defence worked.
+
+Now to test a search payload, run:
+curl.exe -G "http://127.0.0.1:8000/api/history" `
+    -H "X-Session-ID: YOUR_UUID" `
+    --data-urlencode "search=%' OR '1'='1' --"
+This should return an empty array in items and 0 count. This is proof that the input did not manipulate the query.
+Because we need SQLAlchemy to treat the payload as a search value instead of SQL instructions.
+
+
+
+DoS: 
+
+Make sure, in .env, SECURITY_MODE is set to secure.
+
+In a terminal, run:
+pip install requests
+
+and then:
+python test_dos.py
+
+READ THE OUTPUT.
+Test 1 is a deliberately slow request, and then a normal request to see if normal gets processed while slow is running.
+This is to prove that the application can handle a different request instead of making every single request wait in a line.
+
+Test 2 sends 20 slow requests at the same time in order to see how it processes multiple heavy requests at once.
+This is to prove the limit gate only accepts a small number of requests, and rejects excess ones.
+HTTP200 means passed, HTTP503 means rejected.
+
+Test 3 checks the server health to see if the application is still good after the tests.
+
+!!!!!!!!!!!!!!!!!!!
+VERY IMPORTANT:
+In .env, I have modified some values to control the tests. In backend.py, I have done the same.
+Comment them out after tests, we do not want these in our main build. To do this, you have to:
+- Go into backend.py
+- Press ctrl + F
+- search for TEMP
+- The changes are labeled under TEMP comments, with the dashes underneath to represent where they end
+- Follow the instruction, and some nearby ones too. They are obvious.
+- Comment out the marked ones
+- Go into the .env file
+- Comment out the values under TEMP comment.
+
+
+2.8 testing
+
+idk not yet
