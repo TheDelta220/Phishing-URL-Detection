@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import scatter from "./assets/scatter.png";
+import confusionMatrix from "./assets/confusion-matrix.png";
 import "./Output.css";
 
 const CX = 200;
@@ -106,6 +108,26 @@ export default function Output({ result, onBack }) {
       <button type="button" className="output-back" onClick={onBack}>
         Check another URL
       </button>
+
+      <section className="output-graphs">
+        <h2 className="output-graphs-title">How the model performs</h2>
+
+        <figure className="output-graph">
+          <img
+            src={scatter}
+            alt="Scatter plot of URL length against special character count, coloured by class"
+          />
+          <figcaption>URL length vs special character count, by class</figcaption>
+        </figure>
+
+        <figure className="output-graph">
+          <img
+            src={confusionMatrix}
+            alt="Confusion matrix of true labels against predicted labels"
+          />
+          <figcaption>Confusion matrix: true vs predicted labels</figcaption>
+        </figure>
+      </section>
     </div>
   );
 }
