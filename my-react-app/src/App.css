@@ -205,3 +205,10 @@ ERROR PAGE
     linear-gradient(var(--bg), var(--bg)) padding-box,
     linear-gradient(180deg, var(--orange), var(--red)) border-box;
 }
+
+.error-ring h1 {
+  margin: 0;
+  font-size: clamp(26px, 6vw, 40px);
+  line-height: 1.15;
+  text-wrap: balance;
+}

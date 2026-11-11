@@ -1,3 +1,4 @@
+react-router-dom
 fastapi
 uvicorn
 pydantic
@@ -6,3 +7,4 @@ joblib
 scikit-learn
 python-dotenv
 anyio
+react-error-boundary

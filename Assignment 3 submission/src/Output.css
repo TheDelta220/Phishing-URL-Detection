@@ -1,0 +1,191 @@
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200;300&display=swap");
+
+.output-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px;
+}
+
+.output {
+  width: min(460px, 100%);
+  height: auto;
+}
+
+.output-track {
+  fill: none;
+  stroke: #2a2a3e;
+  stroke-width: 22;
+}
+
+.output-fill {
+  fill: none;
+  stroke-width: 22;
+  transition: stroke-dasharray 1.2s ease-out;
+}
+
+.output-tick {
+  font-size: 17px;
+  font-weight: 600;
+  fill: #5c5c66;
+  transition: fill 0.4s ease;
+}
+
+.output-tick.on {
+  fill: #fff;
+}
+
+.output-needle {
+  transition: transform 1.2s ease-out;
+}
+
+.output-number {
+  font-family: "Oswald", sans-serif;
+  font-weight: 200;
+  font-size: 72px;
+  fill: #fff;
+}
+
+.output-label {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  fill: var(--muted);
+}
+
+.output-verdict {
+  margin: 8px 0 0;
+  font-size: 35px;
+  font-weight: 600;
+}
+
+.output-verdict.phishing {
+  color: var(--red);
+}
+
+.output-verdict.legit {
+  color: #4cd98a;
+}
+
+.output-url {
+  margin: 6px 0 0;
+  max-width: 540px;
+  font-size: 19px;
+  color: #ffffff;
+  word-break: break-all;
+  text-align: center;
+}
+
+.output-signals {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  max-width: 540px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.output-signals li {
+  margin-bottom: 8px;
+}
+
+.output-signals strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.output-back {
+  margin-top: 32px;
+  padding: 14px 32px;
+  font-size: 16px;
+  border: 1.5px solid #2a2a30;
+  border-radius: 999px;
+  transition: border-color 0.2s ease;
+}
+
+.output-back:hover {
+  border-color: var(--red);
+}
+
+.output-graphs {
+  width: 100%;
+  max-width: 900px;
+  margin: 80px auto 0;
+  padding: 0 16px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.output-graphs-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.output-graph {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.output-graph img {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  border: 1px solid #2a2a30;
+  border-radius: 12px;
+}
+
+.output-graph figcaption {
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.output-insights {
+  width: 100%;
+  max-width: 720px;
+  margin: 64px auto 0;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.output-insights h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.output-insights,
+.output_graphs {
+  width: 100%;
+  max-width: 1200px;
+}
+.output-insights-graphs,
+.output_graphs {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  align-items: center;
+}
+@media (max-width: 900px) {
+     .output-insights-graphs,
+     .output_graphs { grid-template-columns: 1fr; }
+   }
+/*======================================================================
+for phone screens
+=======================================================================*/
+@media (max-width: 480px) {
+  .go { width: 220px; height: 220px; font-size: 56px; }
+  .main { margin-top: 40px; }
+  .url-area { margin-top: 56px; }
+}
