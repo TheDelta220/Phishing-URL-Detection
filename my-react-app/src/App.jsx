@@ -29,6 +29,11 @@ function Home() {
   const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [status, setStatus] = useState("");
+
+  // funcs for security buttons
+  const [testResult, setTestResult] = useState("");
+  const [testRunning, setTestRunning] = useState(false);
+
   //when Go is pushed:
   const Go = async (e) => {
     //prevent page reload
@@ -68,6 +73,86 @@ function Home() {
       navigate("/error", {
         state: { message: "Can't reach the server. Is the backend running?" },
       });
+    }
+  };
+
+  // SQL SECURITY TEST
+  const runSQL = async () => {
+    setTestRunning(true);
+    setTestResult("SQL Test is running now");
+
+    try {
+      // SQL INJECTION SEARCH PAYLOAD
+      const payload = "%' OR '1'='1' --";
+      const params = new URLSearchParams({search: payload, limit: "10"});
+      const res = await fetch(
+        `http://localhost:8000/api/history?${params}`,
+        {
+          method: "GET", headers: {"X-Session-ID": getSessionId()}
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setTestResult(`Test failed: HTTP ${res.status}`);
+      } else {
+        setTestResult(
+          `SQL TEST FINISHED\n` +
+          `HTTP Status: ${res.status}\n` +
+          `Records returned: ${data.count}\n` +
+          `Expected: 0 records`
+        );
+      }
+    } catch (error) {
+      setTestResult("Cannot connect to the backend for some reason")
+    } finally {
+      setTestRunning(false);
+    }
+  };
+
+  // DENIAL OF SERVICE SECURITY TEST
+  const runDoS = async () => {
+    setTestRunning(true);
+    setTestResult("DoS Test running now: Sending 50 requests at once");
+
+    try {
+      const totalRequests = 50;
+      const requests = Array.from(
+        {length: totalRequests},
+        async () => {
+          try {
+            const res = await fetch(
+              "http://localhost:8000/api/predict",
+              {
+                method: "POST", headers: {"Content-Type": "application/json", "X-Session-ID": getSessionId()},
+                body: JSON.stringify({url: "https://example.com",}),
+              }
+            );
+
+            return res.status;
+          } catch {
+            return "Network error";
+          }
+        }
+      );
+
+      const results = await Promise.all(requests);
+      const successful = results.filter(status => status === 200).length;
+      const rejected = results.filter(status => status === 503).length;
+      const other = totalRequests - successful - rejected;
+
+      setTestResult(
+        `DoS TEST FINISHED\n` +
+        `Total requests: ${totalRequests}\n` +
+        `HTTP 200: ${successful}\n` +
+        `HTTP 503: ${rejected}\n` +
+        `OTHER: ${other}`
+      );
+    } catch (error) {
+      setTestResult("DoS test has failed");
+    } finally {
+      setTestRunning(false);
     }
   };
 
@@ -115,6 +200,17 @@ function Home() {
           </p>
         </div>
       </form>
+
+      <div className="security-tests">
+        <h2>2.7 Security Tests</h2>
+
+        <button type="button" onClick={runSQL} disabled={testRunning}>SQL INJECTION TEST</button>
+        <button type="button" onClick={runDoS} disabled={testRunning}>DENIAL OF SERVICE TEST</button>
+
+        {testResult && (
+          <pre className="test-results">{testResult}</pre>
+        )}
+      </div>
     </div>
   );
 }
