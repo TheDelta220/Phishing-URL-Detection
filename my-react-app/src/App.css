@@ -288,3 +288,10 @@ ERROR PAGE
     padding: 16px;
   }
 }
+
+.error-ring h1 {
+  margin: 0;
+  font-size: clamp(26px, 6vw, 40px);
+  line-height: 1.15;
+  text-wrap: balance;
+}
