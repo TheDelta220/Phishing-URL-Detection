@@ -1,7 +1,16 @@
+/*======================================================================
+IMPORTS
+=======================================================================*/
 import { useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Output from "./Output.jsx";
+import ErrorPage from "./Errors.jsx";
 import "./App.css";
-
+import { getSessionId } from "./session.js";
+/*======================================================================
+cleaning the URL before anything is sent to the backend
+=======================================================================*/
 function cleanURL(value) {
   const trimmed = value.trim();
   if (!trimmed) return null;
@@ -13,52 +22,55 @@ function cleanURL(value) {
     return null;
   }
 }
-
-function getSessionId() {
-  let id = localStorage.getItem("session_id");
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem("session_id", id);
-  }
-  return id;
-}
-export default function App() {
+/*======================================================================
+MAIN FUNCTION
+=======================================================================*/
+function Home() {
+  const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [status, setStatus] = useState("");
-  const [multi, setMulti] = useState(true);
-  const [result, setResult] = useState(null);
   //when Go is pushed:
   const Go = async (e) => {
     //prevent page reload
     e.preventDefault();
     //checks if the URL is a URL, if not, it will return an error message
-    
-    setStatus("Checking...");
-
-    try {
-    const res = await fetch("http://localhost:8000/api/predict", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Session-ID": getSessionId(),
-      },
-      body: JSON.stringify({ url: input.trim() }),
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      setStatus(data.error?.message ?? "Something went wrong.");
+    if (!cleanURL(input)) {
+      setStatus("Enter a valid URL, like example.com");
       return;
     }
-    setStatus("");
-    setResult(data); // this switches to the gauge page
+    setStatus("Checking...");
+    //2 second delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      const res = await fetch("http://localhost:8000/api/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Session-ID": getSessionId(),
+        },
+        body: JSON.stringify({ url: input.trim() }),
+      });
+      const data = await res.json();
+
+      if (res.status >= 500) {
+        navigate("/error", {
+          state: { message: data.error?.message ?? "The server had a problem." },
+        });
+        return;
+      }
+
+      if (!res.ok) {
+        setStatus(data.error?.message ?? "Something went wrong.");
+        return;
+      }
+      navigate("/result", { state: { result: data } });
     } catch {
-    setStatus("Can't reach the server. Is the backend running?");
+      navigate("/error", {
+        state: { message: "Can't reach the server. Is the backend running?" },
+      });
     }
   };
-  if (result) {
-    return <Output result={result} onBack={() => setResult(null)} />;
-  }
+
   return (
     <div className="page">
       <nav className="topbar">
@@ -104,5 +116,32 @@ export default function App() {
         </div>
       </form>
     </div>
+  );
+}
+/*======================================================================
+Goes to the results page
+=======================================================================*/
+function OutputRoute() {
+  const navigate = useNavigate();
+  const result = useLocation().state?.result;
+  if (!result) return <Navigate to="/" replace />;
+  return <Output result={result} onBack={() => navigate("/")} />;
+}
+export default function App() {
+  const location = useLocation();
+  return (
+    <ErrorBoundary
+      resetKeys={[location.pathname]}
+      fallbackRender={({ error }) => (
+        <Navigate to="/error" replace state={{ message: error.message }} />
+      )}
+    >
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/result" element={<OutputRoute />} />
+        <Route path="/error" element={<ErrorPage />} />
+        <Route path="*" element={<ErrorPage notFound />} />
+      </Routes>
+    </ErrorBoundary>
   );
 }

@@ -55,7 +55,7 @@
 
 .output-verdict {
   margin: 8px 0 0;
-  font-size: 24px;
+  font-size: 35px;
   font-weight: 600;
 }
 
@@ -70,8 +70,8 @@
 .output-url {
   margin: 6px 0 0;
   max-width: 540px;
-  font-size: 15px;
-  color: var(--muted);
+  font-size: 19px;
+  color: #ffffff;
   word-break: break-all;
   text-align: center;
 }
@@ -135,7 +135,7 @@
 
 .output-graph img {
   width: 100%;
-  max-width: 720px;
+  max-width: none;
   height: auto;
   border: 1px solid #2a2a30;
   border-radius: 12px;
@@ -145,4 +145,43 @@
   font-size: 14px;
   color: var(--muted);
   text-align: center;
+}
+
+.output-insights {
+  width: 100%;
+  max-width: 720px;
+  margin: 64px auto 0;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.output-insights h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.output-insights,
+.output_graphs {
+  width: 100%;
+  max-width: 1200px;
+}
+.output-insights-graphs,
+.output_graphs {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  align-items: center;
+}
+/*======================================================================
+for phone screens
+=======================================================================*/
+@media (max-width: 480px) {
+  .go { width: 220px; height: 220px; font-size: 56px; }
+  .main { margin-top: 40px; }
+  .url-area { margin-top: 56px; }
 }

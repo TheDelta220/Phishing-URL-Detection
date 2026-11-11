@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import scatter from "./assets/scatter.png";
 import confusionMatrix from "./assets/confusion-matrix.png";
 import "./Output.css";
+import { SessionHistory, UrlFeatures } from "./ResultCharts.jsx";
 
 const CX = 200;
 const CY = 200;
@@ -108,10 +109,16 @@ export default function Output({ result, onBack }) {
       <button type="button" className="output-back" onClick={onBack}>
         Check another URL
       </button>
-
+      <section className="output-insights" aria-labelledby="insights-h">
+        <h2 id="insights-h">About this check</h2>
+          <div className="output-insights-graphs">
+          <UrlFeatures url={result.url} />
+          <SessionHistory currentId={result.id} />
+          </div>
+      </section>
       <section className="output-graphs">
-        <h2 className="output-graphs-title">How the model performs</h2>
-
+        <h2 className="output-graphs-title">How the model performs and its data set</h2>
+        <div className="output_graphs">
         <figure className="output-graph">
           <img
             src={scatter}
@@ -127,6 +134,7 @@ export default function Output({ result, onBack }) {
           />
           <figcaption>Confusion matrix: true vs predicted labels</figcaption>
         </figure>
+        </div>
       </section>
     </div>
   );
